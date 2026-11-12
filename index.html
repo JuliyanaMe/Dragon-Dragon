@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4df">
+  <title>My Little Dragon</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+      color: #49364f;
+      background: #fff4df;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 18% 18%, #ffe1ec 0 8%, transparent 8.5%),
+        radial-gradient(ellipse at 82% 76%, #dff5ff 0 11%, transparent 11.5%),
+        linear-gradient(145deg, #fff8e9, #f8edff);
+    }
+
+    .scene {
+      width: min(100%, 620px);
+      padding: 32px 22px 26px;
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      margin: 0;
+      color: #714c86;
+      font-size: clamp(2rem, 7vw, 3rem);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle { margin: 8px 0 0; color: #806f87; }
+
+    .stage {
+      height: 330px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .ground-shadow {
+      position: absolute;
+      z-index: -1;
+      width: 185px;
+      height: 25px;
+      bottom: 34px;
+      border-radius: 50%;
+      background: #81649a24;
+      animation: shadow 1.8s ease-in-out infinite;
+    }
+
+    .dragon {
+      width: min(280px, 72vw);
+      overflow: visible;
+      cursor: pointer;
+      transform-origin: 50% 80%;
+      animation: bob 1.8s ease-in-out infinite;
+      filter: drop-shadow(0 12px 8px #70568120);
+      transition: filter .2s ease;
+    }
+
+    .dragon:hover { filter: drop-shadow(0 15px 10px #70568135); }
+    .dragon.dancing { animation: dance .55s ease-in-out 3; }
+    .wing { transform-box: fill-box; transform-origin: 12% 85%; animation: flap .8s ease-in-out infinite alternate; }
+    .tail { transform-box: fill-box; transform-origin: 5% 50%; animation: wag 1.2s ease-in-out infinite alternate; }
+    .eye-blink { transform-box: fill-box; transform-origin: center; animation: blink 4s infinite; }
+    .mood { transition: opacity .2s ease; }
+
+    .speech {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      min-width: 118px;
+      padding: 10px 16px;
+      border: 3px solid #fff;
+      border-radius: 20px;
+      background: #fff;
+      color: #725080;
+      font-size: 1.05rem;
+      font-weight: 800;
+      box-shadow: 0 5px 15px #68527a18;
+      transform: translateX(45px);
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      bottom: -10px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-right: 3px solid white;
+      transform: rotate(45deg);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    button {
+      min-width: 108px;
+      padding: 11px 15px;
+      border: 2px solid #eadcf1;
+      border-radius: 999px;
+      background: #fff;
+      color: #60476d;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #e7d8ed;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    button:hover { transform: translateY(-2px); background: #fff9fd; box-shadow: 0 6px 0 #e7d8ed; }
+    button:active { transform: translateY(3px); box-shadow: 0 1px 0 #e7d8ed; }
+    button:focus-visible, .dragon:focus-visible { outline: 4px solid #f3a5c5; outline-offset: 4px; }
+    .hint { margin: 18px 0 0; color: #8d7e91; font-size: .9rem; }
+
+    @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-13px) rotate(2deg); } }
+    @keyframes shadow { 0%, 100% { transform: scaleX(1); opacity: .8; } 50% { transform: scaleX(.78); opacity: .48; } }
+    @keyframes flap { from { transform: rotate(-8deg); } to { transform: rotate(12deg); } }
+    @keyframes wag { from { transform: rotate(-5deg); } to { transform: rotate(7deg); } }
+    @keyframes blink { 0%, 45%, 49%, 100% { transform: scaleY(1); } 47% { transform: scaleY(.1); } }
+    @keyframes dance { 0%, 100% { transform: rotate(0) scale(1); } 25% { transform: rotate(-13deg) scale(1.05); } 75% { transform: rotate(13deg) scale(1.05); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <h1>My Little Dragon</h1>
+    <p class="subtitle">A tiny friend with big feelings ✨</p>
+
+    <section class="stage" aria-label="Your animated dragon">
+      <div class="speech" id="speech" aria-live="polite">Hi, friend! 💕</div>
+      <div class="ground-shadow" aria-hidden="true"></div>
+      <svg class="dragon" id="dragon" viewBox="0 0 300 290" role="img" aria-label="A happy, mint-green baby dragon" tabindex="0" xmlns="http://www.w3.org/2000/svg">
+        <!-- tail -->
+        <g class="tail">
+          <path d="M203 203c38 17 51 9 61-10 5 25-8 43-34 42-14 0-27-7-39-17" fill="#55c9a7" stroke="#338f7c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="m259 193 16 4-10 15" fill="#ffcf70" stroke="#338f7c" stroke-width="4" stroke-linejoin="round"/>
+        </g>
+        <!-- wings -->
+        <g class="wing">
+          <path d="M103 145c-27-42-63-42-70-34 20 8 23 25 15 37-11-3-20 1-24 8 31-4 49 15 65 34" fill="#ffc6df" stroke="#338f7c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M89 164 49 148m33 31-36-14" fill="none" stroke="#ea92bc" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <!-- body -->
+        <ellipse cx="151" cy="190" rx="68" ry="70" fill="#68d8b5" stroke="#338f7c" stroke-width="5"/>
+        <ellipse cx="157" cy="201" rx="39" ry="48" fill="#c9f3d9"/>
+        <path d="M124 221q9 8 18 0m9 8q9 8 18 0m8-11q8 7 15 0" fill="none" stroke="#93d9b8" stroke-width="4" stroke-linecap="round"/>
+        <!-- feet -->
+        <ellipse cx="113" cy="246" rx="28" ry="16" fill="#54c6a2" stroke="#338f7c" stroke-width="4"/>
+        <ellipse cx="188" cy="246" rx="28" ry="16" fill="#54c6a2" stroke="#338f7c" stroke-width="4"/>
+        <path d="M102 247h8m63 0h8" stroke="#318c79" stroke-width="3" stroke-linecap="round"/>
+        <!-- head -->
+        <path d="M91 111 75 72q29 1 50 24m57 8 27-32q6 29-8 50" fill="#71dfbd" stroke="#338f7c" stroke-width="5" stroke-linejoin="round"/>
+        <path d="m88 105 3-23q14 5 25 18m75-11-7 23q12 4 22 8" fill="#ffcf70"/>
+        <ellipse cx="151" cy="129" rx="75" ry="62" fill="#75e0bd" stroke="#338f7c" stroke-width="5"/>
+        <!-- cheeks -->
+        <ellipse cx="102" cy="147" rx="15" ry="9" fill="#ff9db7" opacity=".8"/>
+        <ellipse cx="200" cy="147" rx="15" ry="9" fill="#ff9db7" opacity=".8"/>
+        <!-- eyes -->
+        <g class="eye-blink">
+          <ellipse cx="127" cy="126" rx="9" ry="13" fill="#34334c"/>
+          <ellipse cx="176" cy="126" rx="9" ry="13" fill="#34334c"/>
+          <circle cx="130" cy="122" r="3" fill="white"/>
+          <circle cx="179" cy="122" r="3" fill="white"/>
+        </g>
+        <!-- snout and nose -->
+        <ellipse cx="151" cy="151" rx="33" ry="22" fill="#c8f2d9"/>
+        <ellipse cx="140" cy="147" rx="3.5" ry="2.5" fill="#338f7c"/>
+        <ellipse cx="162" cy="147" rx="3.5" ry="2.5" fill="#338f7c"/>
+        <!-- smile / alternate emotion mouths -->
+        <g class="mood" id="mouth-happy"><path d="M139 157q12 14 25 0" fill="none" stroke="#754d6c" stroke-width="4" stroke-linecap="round"/></g>
+        <g class="mood" id="mouth-sad" style="display:none"><path d="M139 165q12-14 25 0" fill="none" stroke="#754d6c" stroke-width="4" stroke-linecap="round"/></g>
+        <g class="mood" id="mouth-surprised" style="display:none"><ellipse cx="151" cy="160" rx="7" ry="10" fill="#754d6c"/></g>
+        <g class="mood" id="mouth-sleepy" style="display:none"><path d="M141 160q10 3 20 0" fill="none" stroke="#754d6c" stroke-width="4" stroke-linecap="round"/></g>
+        <!-- cute horns -->
+        <path d="M118 77q-4-22 8-30 8 17 3 31m31-2q3-23 18-27 4 19-4 33" fill="#ffcf70" stroke="#338f7c" stroke-width="4" stroke-linejoin="round"/>
+        <path d="m143 92 8-10 8 10" fill="#ff9db7" stroke="#338f7c" stroke-width="3" stroke-linejoin="round"/>
+      </svg>
+    </section>
+
+    <div class="controls" aria-label="Choose your dragon's emotion">
+      <button type="button" data-mood="happy">😊 Happy</button>
+      <button type="button" data-mood="love">🥰 Love</button>
+      <button type="button" data-mood="sad">🥺 Sad</button>
+      <button type="button" data-mood="surprised">😮 Wow!</button>
+      <button type="button" data-mood="sleepy">😴 Sleepy</button>
+      <button type="button" data-mood="dance">💃 Dance</button>
+    </div>
+    <p class="hint">Tap the buttons—or tap your dragon to make it dance!</p>
+  </main>
+
+  <script>
+    const dragon = document.querySelector('#dragon');
+    const speech = document.querySelector('#speech');
+    const mouths = {
+      happy: document.querySelector('#mouth-happy'),
+      sad: document.querySelector('#mouth-sad'),
+      surprised: document.querySelector('#mouth-surprised'),
+      sleepy: document.querySelector('#mouth-sleepy')
+    };
+    const moods = {
+      happy: { face: 'happy', text: 'Hi, friend! 💕', label: 'A happy, mint-green baby dragon' },
+      love: { face: 'happy', text: 'Love you! 💖', label: 'A loving, mint-green baby dragon' },
+      sad: { face: 'sad', text: 'Aww… hug? 🥺', label: 'A sad, mint-green baby dragon' },
+      surprised: { face: 'surprised', text: 'Whoa! ✨', label: 'A surprised, mint-green baby dragon' },
+      sleepy: { face: 'sleepy', text: 'Zzz… 😴', label: 'A sleepy, mint-green baby dragon' },
+      dance: { face: 'happy', text: 'Wiggle time! 🎉', label: 'A dancing, mint-green baby dragon' }
+    };
+
+    function setMood(name) {
+      const mood = moods[name] || moods.happy;
+      Object.entries(mouths).forEach(([face, element]) => {
+        element.style.display = face === mood.face ? '' : 'none';
+      });
+      speech.textContent = mood.text;
+      dragon.setAttribute('aria-label', mood.label);
+
+      if (name === 'love') {
+        dragon.style.filter = 'drop-shadow(0 12px 10px #ff8fba55)';
+      } else {
+        dragon.style.filter = '';
+      }
+
+      if (name === 'dance') {
+        dragon.classList.remove('dancing');
+        void dragon.getBoundingClientRect();
+        dragon.classList.add('dancing');
+      }
+    }
+
+    document.querySelectorAll('[data-mood]').forEach((button) => {
+      button.addEventListener('click', () => setMood(button.dataset.mood));
+    });
+
+    dragon.addEventListener('click', () => setMood('dance'));
+    dragon.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setMood('dance');
+      }
+    });
+  </script>
+</body>
+</html>
